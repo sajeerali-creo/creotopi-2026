@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Creotopi — Design Agency Portfolio</title>
+  <meta name="description" content="Creotopi is a design agency crafting bold brands, beautiful websites and digital experiences.">
+  <meta property="og:title" content="Creotopi — Design Agency">
+  <meta property="og:description" content="Bold brands, beautiful websites, and ideas that refuse to be ordinary.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chivo+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="edge-blur" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+
+  <header class="nav" id="nav">
+    <a href="#top" class="nav__logo" aria-label="Creotopi home" id="logo-link">c</a>
+    <button class="nav__menu" id="menu-btn" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button>
+  </header>
+
+  <nav class="overlay" id="overlay" aria-label="Main">
+    <ul>
+      <li><a href="#top" data-close>Home</a></li>
+      <li><a href="#work" data-close>Work</a></li>
+      <li><a href="#services" data-close>Services</a></li>
+      <li><a href="#faq" data-close>FAQ</a></li>
+      <li><a href="#contact" data-close>Contact</a></li>
+    </ul>
+  </nav>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero__clock mono" id="clock">( --:-- )</div>
+      <div class="hero__social mono"><a href="https://www.behance.net/creotopi" target="_blank" rel="noopener">BE</a> / <span>DR</span> / <span>X</span></div>
+      <h1 class="hero__title" id="hero-title"><span>Creotopi</span><sup>®</sup></h1>
+      <p class="hero__sub" id="hero-sub">Design agency crafting bold brands.</p>
+      <div class="marquee" id="marquee"><div class="marquee__track" id="marquee-track"></div></div>
+      <div class="hero__fade" id="hero-fade" aria-hidden="true"></div>
+    </section>
+
+    <section class="intro container">
+      <p class="intro__text reveal" id="intro-text">We’re Creotopi® — a design agency cultivating bold brands, beautiful websites, and ideas that refuse to be ordinary.</p>
+    </section>
+
+    <section class="work container" id="work">
+      <div class="section-head">
+        <h2 class="h2 reveal">Latest<br>Projects.</h2>
+        <span class="mono small" id="work-count">( _025 )</span>
+      </div>
+      <div class="grid" id="grid"></div>
+      <div class="center"><a class="link" href="https://www.behance.net/creotopi" target="_blank" rel="noopener">View all on Behance <i>↗</i></a></div>
+    </section>
+
+    <section class="services container" id="services">
+      <div class="section-head">
+        <h2 class="h2 reveal">Services.</h2>
+        <a class="link" href="#contact">Get in touch <i>+</i></a>
+      </div>
+      <div class="cards" id="cards"></div>
+    </section>
+
+    <section class="faq container" id="faq">
+      <div class="section-head"><h2 class="h2 reveal">FAQ.</h2></div>
+      <div class="faq__list" id="faq-list"></div>
+    </section>
+  </main>
+
+  <footer class="footer" id="contact">
+    <div class="footer__top">
+      <a href="#top" class="footer__logo" aria-label="Back to top">c</a>
+      <div class="footer__social mono"><a href="https://www.behance.net/creotopi" target="_blank" rel="noopener">BE</a> / <span>DR</span> / <span>X</span></div>
+    </div>
+    <div class="footer__main">
+      <div class="footer__left">
+        <p class="footer__lead">We’d love to hear from you — <em>whether you have a project in mind, or just want to say hi.</em></p>
+        <a class="footer__mail link-big" id="mail-btn" href="mailto:hello@creotopi.com">hello@creotopi.com</a>
+      </div>
+      <form class="footer__form" id="contact-form" novalidate>
+        <h2 class="footer__title">Start a<br>project</h2>
+        <p class="mono small footer__note">Tell us a little — we’ll get back to you.</p>
+        <label class="field"><span class="sr">Name</span><input type="text" name="name" placeholder="Name" required></label>
+        <label class="field"><span class="sr">Email</span><input type="email" name="email" placeholder="Email" required></label>
+        <button type="submit" class="send" id="send-btn">SEND</button>
+        <p class="form-msg mono small" id="form-msg" role="status"></p>
+      </form>
+    </div>
+    <nav class="footer__nav" aria-label="Footer">
+      <a href="#work">Projects</a><a href="#services">Services</a><a href="#faq">FAQ</a><a href="#contact">Contact</a>
+      <span class="footer__copy mono small">© 2025 Creotopi®</span>
+    </nav>
+  </footer>
+
+  <a class="fab" id="fab" href="#contact">Let’s talk <i>↗</i></a>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="js/projects.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
