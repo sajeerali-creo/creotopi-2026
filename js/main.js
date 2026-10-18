@@ -63,6 +63,195 @@
       <div><h3>${s.title}</h3><p>${s.text}</p></div>
     </article>`).join('');
 
+  // google reviews
+  const revCfg = D.googleReviews || {};
+  const revTrack = $('#reviews-track');
+  const revAvg = $('#reviews-avg');
+  const revTotal = $('#reviews-total');
+  const revWrite = $('#reviews-write-link');
+
+  const gIcon = `<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>`;
+
+  const getInitials = (str = '') => str.split(' ').map(w => w[0]).filter(Boolean).slice(0, 2).join('').toUpperCase() || 'CR';
+
+  const revSlider = $('.reviews__slider');
+  let autoTimer = null;
+  const AUTO_INTERVAL = 3800;
+
+  const getStep = () => {
+    const card = revTrack?.querySelector('.rev-card');
+    return card ? card.offsetWidth + 8 : 368;
+  };
+
+  const stepNext = () => {
+    if (!revTrack) return;
+    const half = revTrack.scrollWidth / 2;
+    if (half > 0 && revTrack.scrollLeft >= half - 16) {
+      revTrack.scrollLeft -= half;
+    }
+    revTrack.scrollBy({ left: getStep(), behavior: 'smooth' });
+  };
+
+  const stepPrev = () => {
+    if (!revTrack) return;
+    const half = revTrack.scrollWidth / 2;
+    if (half > 0 && revTrack.scrollLeft <= 16) {
+      revTrack.scrollLeft += half;
+    }
+    revTrack.scrollBy({ left: -getStep(), behavior: 'smooth' });
+  };
+
+  const startAutoSlide = () => {
+    stopAutoSlide();
+    autoTimer = setInterval(stepNext, AUTO_INTERVAL);
+  };
+
+  const stopAutoSlide = () => {
+    if (autoTimer) {
+      clearInterval(autoTimer);
+      autoTimer = null;
+    }
+  };
+
+  const renderReviewCards = (items = [], avg = '5.0', total = items.length, writeUrl = '') => {
+    if (revAvg) revAvg.textContent = Number(avg).toFixed(1);
+    if (revTotal) revTotal.textContent = `( ${total} Google Reviews )`;
+    if (revWrite && writeUrl) revWrite.href = writeUrl;
+    if (!revTrack) return;
+
+    // Duplicate list for infinite smooth wrap
+    const displayList = items.length > 2 ? [...items, ...items] : items;
+
+    revTrack.innerHTML = displayList.map(r => {
+      const rating = Math.min(5, Math.max(1, Math.round(Number(r.rating) || 5)));
+      const stars = '★'.repeat(rating);
+      const avatarHtml = r.avatar
+        ? `<img class="rev-card__avatar" src="${r.avatar}" alt="${r.author}" loading="lazy">`
+        : `<div class="rev-card__avatar">${getInitials(r.author)}</div>`;
+
+      return `
+        <article class="rev-card">
+          <div>
+            <div class="rev-card__top">
+              <div class="rev-card__author">
+                ${avatarHtml}
+                <div>
+                  <h3 class="rev-card__name">${r.author || 'Google User'}</h3>
+                  <p class="rev-card__sub mono">${r.role || 'Verified Client'}</p>
+                </div>
+              </div>
+              <div class="rev-card__gmark">${gIcon}</div>
+            </div>
+            <div class="rev-card__stars" aria-label="${rating} out of 5 stars">${stars}</div>
+            <p class="rev-card__text">“${r.text || ''}”</p>
+          </div>
+          <div class="rev-card__bottom mono">
+            <span class="rev-card__verified">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+              Google Verified
+            </span>
+            <span class="rev-card__time">${r.time || 'Recent'}</span>
+          </div>
+        </article>
+      `;
+    }).join('');
+  };
+
+  const initialWriteUrl = revCfg.placeId
+    ? `https://search.google.com/local/writereview?placeid=${revCfg.placeId}`
+    : (revCfg.writeReviewUrl || 'https://maps.google.com');
+
+  renderReviewCards(revCfg.items, revCfg.rating, revCfg.totalReviews, initialWriteUrl);
+
+  // Automatic live fetch from API endpoint/proxy if configured
+  if (revCfg.apiEndpoint) {
+    fetch(revCfg.apiEndpoint)
+      .then(res => res.ok ? res.json() : Promise.reject(res))
+      .then(data => {
+        let items = null, avg = revCfg.rating, total = revCfg.totalReviews;
+        if (data && data.result && Array.isArray(data.result.reviews)) {
+          items = data.result.reviews.map(r => ({
+            author: r.author_name,
+            role: 'Client Review',
+            avatar: r.profile_photo_url || '',
+            rating: r.rating || 5,
+            time: r.relative_time_description || 'Recently',
+            text: r.text || ''
+          }));
+          if (data.result.rating) avg = data.result.rating;
+          if (data.result.user_ratings_total) total = data.result.user_ratings_total;
+        } else if (Array.isArray(data)) {
+          items = data;
+        } else if (data && Array.isArray(data.reviews)) {
+          items = data.reviews;
+        }
+        if (items && items.length > 0) {
+          renderReviewCards(items, avg, total, initialWriteUrl);
+        }
+      })
+      .catch(e => console.info('Live reviews fetch fallback active:', e));
+  }
+
+  // Prev / Next arrow buttons & drag-scroll & edge-fade listener
+  if (revTrack) {
+    const prevBtn = $('#rev-prev'), nextBtn = $('#rev-next');
+    if (prevBtn) prevBtn.addEventListener('click', () => { stepPrev(); startAutoSlide(); });
+    if (nextBtn) nextBtn.addEventListener('click', () => { stepNext(); startAutoSlide(); });
+
+    let rdown = false, rsx = 0, rsl = 0;
+    revTrack.addEventListener('pointerdown', e => {
+      stopAutoSlide();
+      rdown = true;
+      rsx = e.clientX;
+      rsl = revTrack.scrollLeft;
+      revTrack.classList.add('dragging');
+    });
+    addEventListener('pointerup', () => {
+      if (rdown) {
+        rdown = false;
+        revTrack.classList.remove('dragging');
+        startAutoSlide();
+      }
+    });
+    revTrack.addEventListener('pointermove', e => {
+      if (rdown) revTrack.scrollLeft = rsl - (e.clientX - rsx);
+    });
+
+    // Dynamic edge fade out & infinite seamless wrap
+    revTrack.addEventListener('scroll', () => {
+      const half = revTrack.scrollWidth / 2;
+      if (half > 0 && revTrack.scrollLeft >= half * 1.5) {
+        revTrack.scrollLeft -= half;
+      }
+      if (revSlider) {
+        revSlider.classList.toggle('has-left-fade', revTrack.scrollLeft > 14);
+      }
+    }, { passive: true });
+
+    // Pause auto slide on hover, resume on mouse leave
+    if (revSlider) {
+      revSlider.addEventListener('mouseenter', stopAutoSlide);
+      revSlider.addEventListener('mouseleave', startAutoSlide);
+    }
+
+    // Auto slide only when visible in viewport
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            startAutoSlide();
+          } else {
+            stopAutoSlide();
+          }
+        });
+      }, { threshold: 0.1 });
+      const revSec = $('#reviews');
+      if (revSec) observer.observe(revSec);
+    } else {
+      startAutoSlide();
+    }
+  }
+
   // faq
   $('#faq-list').innerHTML = D.faq.map(f => `
     <div class="faq__item">
@@ -103,8 +292,8 @@
 
   if (reduce) return;
 
-  // velocity based blur on project media + service cards
-  const blurTargets = gsap.utils.toArray('.card__media, .svc');
+  // velocity based blur on project media + service cards + review cards
+  const blurTargets = gsap.utils.toArray('.card__media, .svc, .rev-card');
   const setB = gsap.quickSetter;
   let cur = 0;
   gsap.ticker.add(() => {
@@ -116,8 +305,13 @@
 
   /* ---------- Intro load animation ---------- */
   const split = (el) => {
-    const words = el.textContent.trim().split(/\s+/);
-    el.innerHTML = words.map(w => `<span class="ln"><span>${w}&nbsp;</span></span>`).join('');
+    const lines = el.innerHTML.split(/<br\s*\/?>/i);
+    el.innerHTML = lines.map(line => {
+      const temp = document.createElement('div');
+      temp.innerHTML = line;
+      const words = temp.textContent.trim().split(/\s+/).filter(Boolean);
+      return words.map(w => `<span class="ln"><span>${w}&nbsp;</span></span>`).join('');
+    }).join('<br>');
     return el.querySelectorAll('.ln>span');
   };
   const heroLetters = $('#hero-title span');
@@ -171,6 +365,7 @@
     gsap.from(c.querySelector('.card__meta'), { opacity: 0, y: 12, duration: .8, scrollTrigger: { trigger: c, start: 'top 85%' } });
   });
   gsap.from('.svc', { x: 120, opacity: 0, filter: 'blur(14px)', duration: 1.3, ease: 'expo.out', stagger: .1, scrollTrigger: { trigger: '#cards', start: 'top 85%' } });
+  gsap.from('.rev-card', { x: 120, opacity: 0, filter: 'blur(14px)', duration: 1.3, ease: 'expo.out', stagger: .1, scrollTrigger: { trigger: '#reviews-track', start: 'top 85%' } });
   gsap.from('.faq__item', { opacity: 0, y: 30, duration: 1, ease: 'expo.out', stagger: .08, scrollTrigger: { trigger: '#faq-list', start: 'top 88%' } });
 
   // parallax for project images
