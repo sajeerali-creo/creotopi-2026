@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Chivo+Mono:wght@400;500&family=Funnel+Display:wght@300..800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="css/admin.css?v=3">
 </head>
 <body>
   <header class="admin-topbar">
@@ -62,11 +62,15 @@
           <div><h2>Projects</h2><p>Manage the cards shown on your site.</p></div>
           <button class="button button--line" id="new-project-button" type="button">+ Add project</button>
         </div>
-        <div class="editor-layout">
-          <aside class="item-list" aria-label="Projects" id="project-list"></aside>
-          <form class="editor-form" id="project-form">
+        <div class="table-wrap">
+          <table class="content-table">
+            <thead><tr><th>Order</th><th>Image</th><th>Project</th><th>Service</th><th>Behance</th><th></th></tr></thead>
+            <tbody id="project-list"></tbody>
+          </table>
+        </div>
+        <form class="editor-form" id="project-form" hidden>
             <input type="hidden" id="project-index" value="-1">
-            <div class="editor-form__heading"><h3 id="project-form-title">New project</h3><button class="text-button" id="delete-project-button" type="button" hidden>Delete</button></div>
+            <div class="editor-form__heading"><h3 id="project-form-title">New project</h3><div class="form-actions"><button class="text-button" id="delete-project-button" type="button" hidden>Delete</button><button class="text-button" id="cancel-project-button" type="button">Cancel</button></div></div>
             <div class="form-grid">
               <label class="field"><span>Project title</span><input id="project-title" maxlength="200" required></label>
               <label class="field"><span>Service category</span><select id="project-category" required><option value="Branding">Branding</option><option value="UI/UX">UI / UX</option><option value="Web">Web design</option><option value="Social">Social &amp; motion</option></select></label>
@@ -78,8 +82,7 @@
             <div class="image-preview" id="image-preview" hidden><img id="preview-image" alt="Project image preview"></div>
             <p class="form-message" id="project-message" role="status"></p>
             <button class="button button--line" type="submit">Apply project</button>
-          </form>
-        </div>
+        </form>
       </section>
 
       <section class="admin-section" id="reviews-section" hidden>
@@ -100,11 +103,15 @@
           <div><h2>Review entries</h2><p>Add or edit the review cards shown below the rating.</p></div>
           <button class="button button--line" id="new-review-button" type="button">+ Add review</button>
         </div>
-        <div class="editor-layout">
-          <aside class="item-list" aria-label="Reviews" id="review-list"></aside>
-          <form class="editor-form" id="review-form">
+        <div class="table-wrap">
+          <table class="content-table">
+            <thead><tr><th>Reviewer</th><th>Rating</th><th>Review</th><th></th></tr></thead>
+            <tbody id="review-list"></tbody>
+          </table>
+        </div>
+        <form class="editor-form" id="review-form" hidden>
             <input type="hidden" id="review-index" value="-1">
-            <div class="editor-form__heading"><h3 id="review-form-title">New review</h3><button class="text-button" id="delete-review-button" type="button" hidden>Delete</button></div>
+            <div class="editor-form__heading"><h3 id="review-form-title">New review</h3><div class="form-actions"><button class="text-button" id="delete-review-button" type="button" hidden>Delete</button><button class="text-button" id="cancel-review-button" type="button">Cancel</button></div></div>
             <div class="form-grid">
               <label class="field"><span>Reviewer name</span><input id="review-author" required maxlength="160"></label>
               <label class="field"><span>Role or company</span><input id="review-role" maxlength="160"></label>
@@ -115,14 +122,13 @@
             </div>
             <p class="form-message" id="review-message" role="status"></p>
             <button class="button button--line" type="submit">Apply review</button>
-          </form>
-        </div>
+        </form>
       </section>
 
       <p class="workspace-message" id="workspace-message" role="status"></p>
     </section>
   </main>
 
-  <script src="js/admin.js?v=2"></script>
+  <script src="js/admin.js?v=4"></script>
 </body>
 </html>

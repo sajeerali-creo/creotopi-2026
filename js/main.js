@@ -23,7 +23,7 @@
     ? `<img src="${escapeHTML(p.cover)}" alt="${escapeHTML(p.title)}" loading="lazy">`
     : `<div class="ph">${escapeHTML(p.title).toUpperCase()}</div>`;
 
-  $('#grid').innerHTML = D.projects.map(p => `
+  $('#grid').innerHTML = D.projects.slice(0, 6).map(p => `
     <a class="card" href="${escapeHTML(p.url)}" target="_blank" rel="noopener" data-card>
       <div class="card__media" style="--g1:${escapeHTML(p.g?.[0] || '#ccc')};--g2:${escapeHTML(p.g?.[1] || '#999')}">${media(p)}</div>
       <div class="card__meta"><span>${escapeHTML(p.title)}</span><span>_${escapeHTML(p.date)}</span></div>

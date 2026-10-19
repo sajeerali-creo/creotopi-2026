@@ -15,7 +15,7 @@ Use an HTTPS address for the first setup and for every admin session. The admin 
 
 ## Managing content
 
-- **Works:** Add a project title, service category, Behance link, and image URL or upload a JPG, PNG, or WebP image up to 5 MB. Select **Apply project**, then **Save changes** to publish it.
+- **Works:** Add a project title, service category, Behance link, and image URL or upload a JPG, PNG, or WebP image up to 5 MB. New or edited work moves to the top; use the up/down arrows to change the order. Select **Apply project**, then **Save changes** to publish it.
 - **Google reviews:** Change the displayed average and total, edit the review link and optional live API URL, and add/edit/remove review cards. Select **Save changes** to publish.
 
 Review entries are managed manually unless you already have a compatible live Google reviews API endpoint. This admin does not fetch reviews directly from Google by itself.

@@ -52,24 +52,94 @@
   };
 
   const renderProjectList = () => {
-    const list = $('#project-list');
-    list.replaceChildren();
+    const table = $('#project-list');
+    table.replaceChildren();
     if (!content.projects.length) {
-      list.innerHTML = '<p class="empty-state">No projects yet. Add your first project.</p>';
+      const row = table.insertRow();
+      const cell = row.insertCell();
+      cell.colSpan = 6;
+      cell.className = 'table-empty';
+      cell.textContent = 'No projects yet. Add your first project.';
       return;
     }
 
     content.projects.forEach((project, index) => {
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = `item-row${Number($('#project-index').value) === index ? ' is-active' : ''}`;
-      button.innerHTML = '<span class="item-row__title"></span><span class="item-row__meta"></span>';
-      button.querySelector('.item-row__title').textContent = project.title;
-      button.querySelector('.item-row__meta').textContent = project.tag;
-      button.addEventListener('click', () => editProject(index));
-      list.append(button);
+      const row = table.insertRow();
+      const orderCell = row.insertCell();
+      const order = document.createElement('div');
+      order.className = 'order-controls';
+      const number = document.createElement('span');
+      number.className = 'table-order';
+      number.textContent = String(index + 1).padStart(2, '0');
+      const moveUp = document.createElement('button');
+      moveUp.type = 'button';
+      moveUp.className = 'order-button';
+      moveUp.textContent = '↑';
+      moveUp.setAttribute('aria-label', `Move ${project.title} up`);
+      moveUp.title = 'Move up';
+      moveUp.disabled = index === 0;
+      moveUp.addEventListener('click', () => moveProject(index, -1));
+      const moveDown = document.createElement('button');
+      moveDown.type = 'button';
+      moveDown.className = 'order-button';
+      moveDown.textContent = '↓';
+      moveDown.setAttribute('aria-label', `Move ${project.title} down`);
+      moveDown.title = 'Move down';
+      moveDown.disabled = index === content.projects.length - 1;
+      moveDown.addEventListener('click', () => moveProject(index, 1));
+      order.append(number, moveUp, moveDown);
+      orderCell.append(order);
+
+      const imageCell = row.insertCell();
+      if (project.cover) {
+        const image = document.createElement('img');
+        image.className = 'table-thumb';
+        image.src = project.cover;
+        image.alt = '';
+        image.loading = 'lazy';
+        imageCell.append(image);
+      } else {
+        imageCell.append(Object.assign(document.createElement('span'), { className: 'table-thumb table-thumb--empty' }));
+      }
+
+      const titleCell = row.insertCell();
+      const title = document.createElement('strong');
+      title.className = 'table-title';
+      title.textContent = project.title;
+      const date = document.createElement('span');
+      date.className = 'table-subtext';
+      date.textContent = project.date || 'No date';
+      titleCell.append(title, date);
+      row.insertCell().textContent = project.tag;
+
+      const linkCell = row.insertCell();
+      const link = document.createElement('a');
+      link.className = 'table-link';
+      link.href = project.url;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.textContent = 'Open ↗';
+      linkCell.append(link);
+
+      const actionCell = row.insertCell();
+      const edit = document.createElement('button');
+      edit.type = 'button';
+      edit.className = 'table-action';
+      edit.textContent = 'Edit';
+      edit.addEventListener('click', () => editProject(index));
+      actionCell.append(edit);
     });
   };
+
+  function moveProject(index, direction) {
+    const nextIndex = index + direction;
+    if (nextIndex < 0 || nextIndex >= content.projects.length) return;
+    [content.projects[index], content.projects[nextIndex]] = [content.projects[nextIndex], content.projects[index]];
+    $('#project-form').hidden = true;
+    $('#project-index').value = '-1';
+    renderProjectList();
+    setMessage($('#workspace-message'), 'Project order changed. Select Save changes to publish it.');
+  }
 
   const updateImagePreview = source => {
     const preview = $('#image-preview');
@@ -84,6 +154,7 @@
 
   const newProject = () => {
     $('#project-form').reset();
+    $('#project-form').hidden = false;
     $('#project-index').value = '-1';
     $('#project-title').value = '';
     $('#project-category').value = 'Branding';
@@ -96,11 +167,13 @@
     setMessage($('#project-message'), '');
     updateImagePreview('');
     renderProjectList();
+    $('#project-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   function editProject(index) {
     const project = content.projects[index];
     if (!project) return;
+    $('#project-form').hidden = false;
     $('#project-index').value = index;
     $('#project-title').value = project.title || '';
     $('#project-category').value = project.tag || 'Branding';
@@ -113,30 +186,69 @@
     setMessage($('#project-message'), '');
     updateImagePreview(project.cover || '');
     renderProjectList();
+    $('#project-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   const renderReviewList = () => {
-    const list = $('#review-list');
-    list.replaceChildren();
+    const table = $('#review-list');
+    table.replaceChildren();
     if (!content.googleReviews.items.length) {
-      list.innerHTML = '<p class="empty-state">No review entries yet. Add one to display it on the site.</p>';
+      const row = table.insertRow();
+      const cell = row.insertCell();
+      cell.colSpan = 4;
+      cell.className = 'table-empty';
+      cell.textContent = 'No review entries yet. Add one to display it on the site.';
       return;
     }
 
     content.googleReviews.items.forEach((review, index) => {
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = `item-row${Number($('#review-index').value) === index ? ' is-active' : ''}`;
-      button.innerHTML = '<span class="item-row__title"></span><span class="item-row__meta"></span>';
-      button.querySelector('.item-row__title').textContent = review.author;
-      button.querySelector('.item-row__meta').textContent = `${review.rating} ★`;
-      button.addEventListener('click', () => editReview(index));
-      list.append(button);
+      const row = table.insertRow();
+      const authorCell = row.insertCell();
+      const author = document.createElement('div');
+      author.className = 'reviewer-cell';
+      if (review.avatar) {
+        const avatar = document.createElement('img');
+        avatar.className = 'review-avatar';
+        avatar.src = review.avatar;
+        avatar.alt = '';
+        avatar.loading = 'lazy';
+        author.append(avatar);
+      } else {
+        const initials = document.createElement('span');
+        initials.className = 'review-avatar review-avatar--initials';
+        initials.textContent = review.author.split(/\s+/).map(part => part[0]).slice(0, 2).join('').toUpperCase();
+        author.append(initials);
+      }
+      const nameGroup = document.createElement('span');
+      const name = document.createElement('strong');
+      name.className = 'table-title';
+      name.textContent = review.author;
+      const role = document.createElement('span');
+      role.className = 'table-subtext';
+      role.textContent = review.role || 'Client';
+      nameGroup.append(name, role);
+      author.append(nameGroup);
+      authorCell.append(author);
+
+      const rating = row.insertCell();
+      rating.className = 'table-rating';
+      rating.textContent = `${review.rating} ★`;
+      const excerpt = row.insertCell();
+      excerpt.className = 'review-excerpt';
+      excerpt.textContent = review.text;
+      const actionCell = row.insertCell();
+      const edit = document.createElement('button');
+      edit.type = 'button';
+      edit.className = 'table-action';
+      edit.textContent = 'Edit';
+      edit.addEventListener('click', () => editReview(index));
+      actionCell.append(edit);
     });
   };
 
   const newReview = () => {
     $('#review-form').reset();
+    $('#review-form').hidden = false;
     $('#review-index').value = '-1';
     $('#review-author').value = '';
     $('#review-role').value = '';
@@ -148,11 +260,13 @@
     $('#delete-review-button').hidden = true;
     setMessage($('#review-message'), '');
     renderReviewList();
+    $('#review-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   function editReview(index) {
     const review = content.googleReviews.items[index];
     if (!review) return;
+    $('#review-form').hidden = false;
     $('#review-index').value = index;
     $('#review-author').value = review.author || '';
     $('#review-role').value = review.role || '';
@@ -164,6 +278,7 @@
     $('#delete-review-button').hidden = false;
     setMessage($('#review-message'), '');
     renderReviewList();
+    $('#review-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   const initializeWorkspace = async () => {
@@ -189,8 +304,10 @@
     $('#logout-button').hidden = false;
     status.textContent = 'Connected';
     updateCounters();
-    newProject();
-    newReview();
+    $('#project-form').hidden = true;
+    $('#review-form').hidden = true;
+    renderProjectList();
+    renderReviewList();
   };
 
   authForm.addEventListener('submit', async event => {
@@ -233,6 +350,16 @@
 
   $('#new-project-button').addEventListener('click', newProject);
   $('#new-review-button').addEventListener('click', newReview);
+  $('#cancel-project-button').addEventListener('click', () => {
+    $('#project-form').hidden = true;
+    $('#project-index').value = '-1';
+    renderProjectList();
+  });
+  $('#cancel-review-button').addEventListener('click', () => {
+    $('#review-form').hidden = true;
+    $('#review-index').value = '-1';
+    renderReviewList();
+  });
 
   $('#project-form').addEventListener('submit', async event => {
     event.preventDefault();
@@ -255,11 +382,11 @@
       if (!saveProject.cover) throw new Error('Add an image URL or upload an image.');
 
       const index = Number($('#project-index').value);
-      if (index < 0) content.projects.push(saveProject);
-      else content.projects[index] = saveProject;
+      if (index >= 0) content.projects.splice(index, 1);
+      content.projects.unshift(saveProject);
       updateCounters();
       renderProjectList();
-      editProject(index < 0 ? content.projects.length - 1 : index);
+      editProject(0);
       setMessage($('#project-message'), 'Project applied. Select Save changes to publish it.');
     } catch (error) {
       setMessage($('#project-message'), error.message);
@@ -271,8 +398,10 @@
     if (index < 0 || !window.confirm('Delete this project? Save changes to publish the deletion.')) return;
     content.projects.splice(index, 1);
     updateCounters();
-    newProject();
-    setMessage($('#project-message'), 'Project removed. Select Save changes to publish it.');
+    $('#project-form').hidden = true;
+    $('#project-index').value = '-1';
+    renderProjectList();
+    setMessage($('#workspace-message'), 'Project removed. Select Save changes to publish it.');
   });
 
   $('#review-form').addEventListener('submit', event => {
@@ -299,8 +428,10 @@
     if (index < 0 || !window.confirm('Delete this review? Save changes to publish the deletion.')) return;
     content.googleReviews.items.splice(index, 1);
     updateCounters();
-    newReview();
-    setMessage($('#review-message'), 'Review removed. Select Save changes to publish it.');
+    $('#review-form').hidden = true;
+    $('#review-index').value = '-1';
+    renderReviewList();
+    setMessage($('#workspace-message'), 'Review removed. Select Save changes to publish it.');
   });
 
   saveButton.addEventListener('click', async () => {
