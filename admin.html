@@ -87,7 +87,7 @@
 
       <section class="admin-section" id="reviews-section" hidden>
         <div class="section-toolbar">
-          <div><h2>Google reviews</h2><p>Manage the score, links, and reviews displayed on the site.</p></div>
+          <div><h2>Google reviews</h2><p>Enter a Place ID to load live Google reviews. Saved entries remain as a fallback.</p></div>
         </div>
         <form class="editor-form review-settings" id="review-settings-form">
           <div class="form-grid">
@@ -95,7 +95,7 @@
             <label class="field"><span>Total Google reviews</span><input id="review-count" type="number" min="0" step="1" required></label>
             <label class="field"><span>Google Place ID</span><input id="review-place-id"></label>
             <label class="field"><span>Write a review link</span><input id="review-write-url" type="url" placeholder="https://…"></label>
-            <label class="field field--wide"><span>Live reviews API URL <small>Optional</small></span><input id="review-api-url" type="url" placeholder="https://…"></label>
+            <label class="field field--wide"><span>Custom reviews API URL <small>Optional, used only without a Place ID</small></span><input id="review-api-url" type="url" placeholder="https://…"></label>
           </div>
         </form>
 
