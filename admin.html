@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Admin — Creotopi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chivo+Mono:wght@400;500&family=Funnel+Display:wght@300..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <header class="admin-topbar">
+    <a class="admin-brand" href="index.html" aria-label="Creotopi home">c <span>CREOTOPI / ADMIN</span></a>
+    <div class="admin-topbar__actions">
+      <span class="admin-status" id="admin-status" aria-live="polite">Connecting…</span>
+      <a class="admin-view-link" href="index.html" target="_blank" rel="noopener">View site ↗</a>
+      <button class="button button--quiet" id="logout-button" type="button" hidden>Sign out</button>
+    </div>
+  </header>
+
+  <main class="admin-main">
+    <section class="auth-panel" id="auth-panel" hidden>
+      <p class="eyebrow">CREOTOPI / PRIVATE AREA</p>
+      <h1 id="auth-title">Admin</h1>
+      <p class="auth-copy" id="auth-copy"></p>
+      <form id="auth-form">
+        <label class="field" id="setup-key-field" hidden>
+          <span>Private setup key</span>
+          <input type="password" id="setup-key" autocomplete="one-time-code">
+        </label>
+        <label class="field" id="confirm-field" hidden>
+          <span>Confirm password</span>
+          <input type="password" id="confirm-password" autocomplete="new-password" minlength="12">
+        </label>
+        <label class="field">
+          <span id="password-label">Password</span>
+          <input type="password" id="admin-password" autocomplete="current-password" required>
+        </label>
+        <button class="button button--dark" id="auth-submit" type="submit">Sign in</button>
+        <p class="form-message" id="auth-message" role="status"></p>
+      </form>
+    </section>
+
+    <section class="workspace" id="workspace" hidden>
+      <div class="workspace-heading">
+        <div>
+          <p class="eyebrow">CONTENT MANAGER</p>
+          <h1>Admin.</h1>
+        </div>
+        <button class="button button--dark" id="save-button" type="button">Save changes</button>
+      </div>
+
+      <nav class="admin-tabs" aria-label="Admin sections">
+        <button type="button" class="admin-tab is-active" data-tab="works" aria-selected="true">Works <span id="project-total">0</span></button>
+        <button type="button" class="admin-tab" data-tab="reviews" aria-selected="false">Google reviews <span id="review-total">0</span></button>
+      </nav>
+
+      <section class="admin-section" id="works-section">
+        <div class="section-toolbar">
+          <div><h2>Projects</h2><p>Manage the cards shown on your site.</p></div>
+          <button class="button button--line" id="new-project-button" type="button">+ Add project</button>
+        </div>
+        <div class="editor-layout">
+          <aside class="item-list" aria-label="Projects" id="project-list"></aside>
+          <form class="editor-form" id="project-form">
+            <input type="hidden" id="project-index" value="-1">
+            <div class="editor-form__heading"><h3 id="project-form-title">New project</h3><button class="text-button" id="delete-project-button" type="button" hidden>Delete</button></div>
+            <div class="form-grid">
+              <label class="field"><span>Project title</span><input id="project-title" maxlength="200" required></label>
+              <label class="field"><span>Service category</span><select id="project-category" required><option value="Branding">Branding</option><option value="UI/UX">UI / UX</option><option value="Web">Web design</option><option value="Social">Social &amp; motion</option></select></label>
+              <label class="field"><span>Project date</span><input id="project-date" placeholder="MM.YY" maxlength="12"></label>
+              <label class="field"><span>Behance link</span><input id="project-url" type="url" placeholder="https://www.behance.net/..." required></label>
+              <label class="field field--wide"><span>Image URL or path</span><input id="project-cover" type="text" placeholder="https://… or assets/uploads/…"></label>
+              <label class="field field--wide"><span>Upload an image <small>JPG, PNG, or WebP · max 5 MB</small></span><input id="project-image" type="file" accept="image/jpeg,image/png,image/webp"></label>
+            </div>
+            <div class="image-preview" id="image-preview" hidden><img id="preview-image" alt="Project image preview"></div>
+            <p class="form-message" id="project-message" role="status"></p>
+            <button class="button button--line" type="submit">Apply project</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="admin-section" id="reviews-section" hidden>
+        <div class="section-toolbar">
+          <div><h2>Google reviews</h2><p>Manage the score, links, and reviews displayed on the site.</p></div>
+        </div>
+        <form class="editor-form review-settings" id="review-settings-form">
+          <div class="form-grid">
+            <label class="field"><span>Average rating <small>0 to 5</small></span><input id="review-rating" type="number" min="0" max="5" step="0.1" required></label>
+            <label class="field"><span>Total Google reviews</span><input id="review-count" type="number" min="0" step="1" required></label>
+            <label class="field"><span>Google Place ID</span><input id="review-place-id"></label>
+            <label class="field"><span>Write a review link</span><input id="review-write-url" type="url" placeholder="https://…"></label>
+            <label class="field field--wide"><span>Live reviews API URL <small>Optional</small></span><input id="review-api-url" type="url" placeholder="https://…"></label>
+          </div>
+        </form>
+
+        <div class="section-toolbar review-list-heading">
+          <div><h2>Review entries</h2><p>Add or edit the review cards shown below the rating.</p></div>
+          <button class="button button--line" id="new-review-button" type="button">+ Add review</button>
+        </div>
+        <div class="editor-layout">
+          <aside class="item-list" aria-label="Reviews" id="review-list"></aside>
+          <form class="editor-form" id="review-form">
+            <input type="hidden" id="review-index" value="-1">
+            <div class="editor-form__heading"><h3 id="review-form-title">New review</h3><button class="text-button" id="delete-review-button" type="button" hidden>Delete</button></div>
+            <div class="form-grid">
+              <label class="field"><span>Reviewer name</span><input id="review-author" required maxlength="160"></label>
+              <label class="field"><span>Role or company</span><input id="review-role" maxlength="160"></label>
+              <label class="field"><span>Rating</span><select id="review-item-rating"><option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="2">2 stars</option><option value="1">1 star</option></select></label>
+              <label class="field"><span>Date label</span><input id="review-time" placeholder="2 weeks ago" maxlength="80"></label>
+              <label class="field field--wide"><span>Avatar image URL <small>Optional</small></span><input id="review-avatar" type="url" placeholder="https://…"></label>
+              <label class="field field--wide"><span>Review text</span><textarea id="review-text" rows="5" required maxlength="1500"></textarea></label>
+            </div>
+            <p class="form-message" id="review-message" role="status"></p>
+            <button class="button button--line" type="submit">Apply review</button>
+          </form>
+        </div>
+      </section>
+
+      <p class="workspace-message" id="workspace-message" role="status"></p>
+    </section>
+  </main>
+
+  <script src="js/admin.js?v=2"></script>
+</body>
+</html>

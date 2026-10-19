@@ -1,7 +1,9 @@
 (() => {
+  const init = () => {
   const D = window.CREOTOPI;
   const $ = (s, c = document) => c.querySelector(s);
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 
   /* ---------- Render content ---------- */
   const mail = $('#mail-btn');
@@ -18,13 +20,13 @@
   });
 
   const media = p => p.cover
-    ? `<img src="${p.cover}" alt="${p.title}" loading="lazy">`
-    : `<div class="ph">${p.title.toUpperCase()}</div>`;
+    ? `<img src="${escapeHTML(p.cover)}" alt="${escapeHTML(p.title)}" loading="lazy">`
+    : `<div class="ph">${escapeHTML(p.title).toUpperCase()}</div>`;
 
   $('#grid').innerHTML = D.projects.map(p => `
-    <a class="card" href="${p.url}" target="_blank" rel="noopener" data-card>
-      <div class="card__media" style="--g1:${p.g?.[0] || '#ccc'};--g2:${p.g?.[1] || '#999'}">${media(p)}</div>
-      <div class="card__meta"><span>${p.title}</span><span>_${p.date}</span></div>
+    <a class="card" href="${escapeHTML(p.url)}" target="_blank" rel="noopener" data-card>
+      <div class="card__media" style="--g1:${escapeHTML(p.g?.[0] || '#ccc')};--g2:${escapeHTML(p.g?.[1] || '#999')}">${media(p)}</div>
+      <div class="card__meta"><span>${escapeHTML(p.title)}</span><span>_${escapeHTML(p.date)}</span></div>
     </a>`).join('');
   $('#work-count').textContent = `( _${String(new Date().getFullYear()).slice(2).padStart(3, '0')} )`;
 
@@ -80,7 +82,8 @@
 
   const getStep = () => {
     const card = revTrack?.querySelector('.rev-card');
-    return card ? card.offsetWidth + 24 : 384;
+    const gap = revTrack ? parseFloat(getComputedStyle(revTrack).columnGap) || 0 : 0;
+    return card ? card.offsetWidth + gap : 384;
   };
 
   const stepNext = () => {
@@ -126,8 +129,8 @@
       const rating = Math.min(5, Math.max(1, Math.round(Number(r.rating) || 5)));
       const stars = '★'.repeat(rating);
       const avatarHtml = r.avatar
-        ? `<img class="rev-card__avatar" src="${r.avatar}" alt="${r.author}" loading="lazy">`
-        : `<div class="rev-card__avatar">${getInitials(r.author)}</div>`;
+        ? `<img class="rev-card__avatar" src="${escapeHTML(r.avatar)}" alt="${escapeHTML(r.author)}" loading="lazy">`
+        : `<div class="rev-card__avatar">${escapeHTML(getInitials(r.author))}</div>`;
 
       return `
         <article class="rev-card">
@@ -136,21 +139,21 @@
               <div class="rev-card__author">
                 ${avatarHtml}
                 <div>
-                  <h3 class="rev-card__name">${r.author || 'Google User'}</h3>
-                  <p class="rev-card__sub mono">${r.role || 'Verified Client'}</p>
+                  <h3 class="rev-card__name">${escapeHTML(r.author || 'Google User')}</h3>
+                  <p class="rev-card__sub mono">${escapeHTML(r.role || 'Verified Client')}</p>
                 </div>
               </div>
               <div class="rev-card__gmark">${gIcon}</div>
             </div>
             <div class="rev-card__stars" aria-label="${rating} out of 5 stars">${stars}</div>
-            <p class="rev-card__text">“${r.text || ''}”</p>
+            <p class="rev-card__text">“${escapeHTML(r.text || '')}”</p>
           </div>
           <div class="rev-card__bottom mono">
             <span class="rev-card__verified">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
               Google Verified
             </span>
-            <span class="rev-card__time">${r.time || 'Recent'}</span>
+            <span class="rev-card__time">${escapeHTML(r.time || 'Recent')}</span>
           </div>
         </article>
       `;
@@ -385,4 +388,7 @@
     gsap.to('#nav', { yPercent: scroll > last && scroll > 200 ? -120 : 0, duration: .5, ease: 'power3.out', overwrite: true });
     last = scroll;
   });
+  };
+
+  (window.CREOTOPI_READY || Promise.resolve()).then(init);
 })();

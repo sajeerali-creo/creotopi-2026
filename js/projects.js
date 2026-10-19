@@ -34,10 +34,10 @@ window.CREOTOPI = {
   ],
 
   services: [
-    { n: "001", title: "BRANDING", text: "We craft logos and brand systems that feel unmistakably yours.", color: "#d9d0e8", icon: "a" },
-    { n: "002", title: "UI / UX", text: "Thoughtful interfaces designed around real people and real goals.", color: "#cdf1ae", icon: "b" },
-    { n: "003", title: "WEB DESIGN", text: "Beautiful, functional websites built to perform and impress.", color: "#ebc0c1", icon: "c" },
-    { n: "004", title: "SOCIAL & MOTION", text: "Scroll-stopping visuals and motion for every channel.", color: "#f3ead8", icon: "a" }
+    { n: "001", title: "BRANDING", tag: "Branding", text: "We craft logos and brand systems that feel unmistakably yours.", color: "#d9d0e8", icon: "a" },
+    { n: "002", title: "UI / UX", tag: "UI/UX", text: "Thoughtful interfaces designed around real people and real goals.", color: "#cdf1ae", icon: "b" },
+    { n: "003", title: "WEB DESIGN", tag: "Web", text: "Beautiful, functional websites built to perform and impress.", color: "#ebc0c1", icon: "c" },
+    { n: "004", title: "SOCIAL & MOTION", tag: "Social", text: "Scroll-stopping visuals and motion for every channel.", color: "#f3ead8", icon: "a" }
   ],
 
   // GOOGLE REVIEWS CONFIGURATION & AUTOMATIC SYNC
