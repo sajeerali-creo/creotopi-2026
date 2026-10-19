@@ -80,7 +80,7 @@
 
   const getStep = () => {
     const card = revTrack?.querySelector('.rev-card');
-    return card ? card.offsetWidth + 8 : 368;
+    return card ? card.offsetWidth + 24 : 384;
   };
 
   const stepNext = () => {
@@ -364,8 +364,8 @@
     gsap.from(c.querySelector('.card__media'), { clipPath: 'inset(12% 8% 12% 8% round 28px)', scale: .94, opacity: 0, duration: 1.3, ease: 'expo.out', scrollTrigger: { trigger: c, start: 'top 90%' } });
     gsap.from(c.querySelector('.card__meta'), { opacity: 0, y: 12, duration: .8, scrollTrigger: { trigger: c, start: 'top 85%' } });
   });
-  gsap.from('.svc', { x: 120, opacity: 0, filter: 'blur(14px)', duration: 1.3, ease: 'expo.out', stagger: .1, scrollTrigger: { trigger: '#cards', start: 'top 85%' } });
-  gsap.from('.rev-card', { x: 120, opacity: 0, filter: 'blur(14px)', duration: 1.3, ease: 'expo.out', stagger: .1, scrollTrigger: { trigger: '#reviews-track', start: 'top 85%' } });
+  gsap.from('.svc', { x: 80, opacity: 0, filter: 'blur(10px)', duration: 1.1, ease: 'expo.out', stagger: .08, clearProps: 'transform,opacity,filter', scrollTrigger: { trigger: '#cards', start: 'top 90%', once: true } });
+  gsap.from('#reviews-track .rev-card:nth-child(-n+6)', { x: 80, opacity: 0, filter: 'blur(10px)', duration: 1.1, ease: 'expo.out', stagger: .08, clearProps: 'transform,opacity,filter', scrollTrigger: { trigger: '#reviews-track', start: 'top 90%', once: true } });
   gsap.from('.faq__item', { opacity: 0, y: 30, duration: 1, ease: 'expo.out', stagger: .08, scrollTrigger: { trigger: '#faq-list', start: 'top 88%' } });
 
   // parallax for project images

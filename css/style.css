@@ -71,7 +71,7 @@ img{display:block;max-width:100%}
 
 /* services */
 .services{padding:10vh 0}
-.cards{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:0 0 6px 0;cursor:grab}
+.cards{display:flex;gap:24px;overflow-x:auto;scrollbar-width:none;padding:0 0 6px 0;cursor:grab}
 .cards::-webkit-scrollbar{display:none}
 .svc{flex:none;width:clamp(260px,29vw,318px);height:min(54vh,356px);border-radius:var(--r);padding:30px 28px;background:var(--c);display:flex;flex-direction:column;justify-content:space-between;transition:transform .7s var(--ease)}
 .svc:hover{transform:translateY(-8px)}
@@ -97,7 +97,7 @@ img{display:block;max-width:100%}
 
 .reviews__slider{position:relative;overflow:hidden;padding:8px 0 20px;-webkit-mask-image:linear-gradient(to right,#000 0%,#000 calc(100% - 140px),transparent 100%);mask-image:linear-gradient(to right,#000 0%,#000 calc(100% - 140px),transparent 100%);transition:-webkit-mask-image .4s ease,mask-image .4s ease}
 .reviews__slider.has-left-fade{-webkit-mask-image:linear-gradient(to right,transparent 0%,#000 50px,#000 calc(100% - 140px),transparent 100%);mask-image:linear-gradient(to right,transparent 0%,#000 50px,#000 calc(100% - 140px),transparent 100%)}
-.reviews__track{display:flex;gap:8px;overflow-x:auto;scroll-behavior:smooth;scrollbar-width:none;-webkit-overflow-scrolling:touch;cursor:grab;user-select:none;padding:0 0 6px 0}
+.reviews__track{display:flex;gap:24px;overflow-x:auto;scroll-behavior:smooth;scrollbar-width:none;-webkit-overflow-scrolling:touch;cursor:grab;user-select:none;padding:0 0 6px 0}
 .reviews__track::-webkit-scrollbar{display:none}
 .reviews__track.dragging{cursor:grabbing;scroll-behavior:auto}
 
