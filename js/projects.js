@@ -40,13 +40,8 @@ window.CREOTOPI = {
     { n: "004", title: "SOCIAL & MOTION", tag: "Social", text: "Scroll-stopping visuals and motion for every channel.", color: "#f3ead8", icon: "a" }
   ],
 
-  // GOOGLE REVIEWS CONFIGURATION & AUTOMATIC SYNC
+  // STATIC GOOGLE REVIEWS MANAGED IN THE ADMIN
   googleReviews: {
-    // Optional: your Google Place ID to auto-link "Review us on Google" directly
-    placeId: "",
-    // Optional: live API/proxy endpoint URL returning Google Place Details or reviews JSON
-    // e.g. "https://your-domain.com/api/google-reviews" or serverless function
-    apiEndpoint: "",
     // Direct URL for clients to leave or read reviews on Google
     writeReviewUrl: "https://search.google.com/local/writereview?placeid=ChIJ",
     rating: 5.0,

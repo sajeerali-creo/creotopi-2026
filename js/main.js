@@ -160,44 +160,9 @@
     }).join('');
   };
 
-  const initialWriteUrl = revCfg.placeId
-    ? `https://search.google.com/local/writereview?placeid=${encodeURIComponent(revCfg.placeId)}`
-    : (revCfg.writeReviewUrl || 'https://maps.google.com');
+  const initialWriteUrl = revCfg.writeReviewUrl || 'https://maps.google.com';
 
   renderReviewCards(revCfg.items, revCfg.rating, revCfg.totalReviews, initialWriteUrl);
-
-  const reviewsEndpoint = revCfg.placeId ? 'api/google-reviews.php' : revCfg.apiEndpoint;
-  if (reviewsEndpoint) {
-    fetch(reviewsEndpoint)
-      .then(res => res.ok ? res.json() : Promise.reject(res))
-      .then(data => {
-        let items = null, avg = revCfg.rating, total = revCfg.totalReviews;
-        if (data && data.source === 'google' && Array.isArray(data.items)) {
-          items = data.items;
-          avg = data.rating ?? avg;
-          total = data.totalReviews ?? total;
-        } else if (data && data.result && Array.isArray(data.result.reviews)) {
-          items = data.result.reviews.map(r => ({
-            author: r.author_name,
-            role: 'Client Review',
-            avatar: r.profile_photo_url || '',
-            rating: r.rating || 5,
-            time: r.relative_time_description || 'Recently',
-            text: r.text || ''
-          }));
-          if (data.result.rating) avg = data.result.rating;
-          if (data.result.user_ratings_total) total = data.result.user_ratings_total;
-        } else if (Array.isArray(data)) {
-          items = data;
-        } else if (data && Array.isArray(data.reviews)) {
-          items = data.reviews;
-        }
-        if (items && items.length > 0) {
-          renderReviewCards(items, avg, total, initialWriteUrl);
-        }
-      })
-      .catch(e => console.info('Live reviews fetch fallback active:', e));
-  }
 
   // Prev / Next arrow buttons & drag-scroll & edge-fade listener
   if (revTrack) {

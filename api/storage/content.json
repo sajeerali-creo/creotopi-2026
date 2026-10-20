@@ -8,8 +8,6 @@
     { "title": "Project 06", "tag": "UI/UX", "date": "06.25", "cover": "assets/projects/project-06.jpg", "url": "https://www.behance.net/creotopi", "g": ["#cfe8a8", "#6aa6c9"] }
   ],
   "googleReviews": {
-    "placeId": "",
-    "apiEndpoint": "",
     "writeReviewUrl": "https://search.google.com/local/writereview?placeid=ChIJ",
     "rating": 5.0,
     "totalReviews": 48,

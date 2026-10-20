@@ -6,6 +6,8 @@
   const authMessage = $('#auth-message');
   const status = $('#admin-status');
   const saveButton = $('#save-button');
+  const projectDrawer = $('#project-drawer');
+  const reviewDrawer = $('#review-drawer');
   let csrfToken = '';
   let content = null;
   let activeTab = 'works';
@@ -50,6 +52,18 @@
     $('#project-total').textContent = content.projects.length;
     $('#review-total').textContent = content.googleReviews.items.length;
   };
+
+  function deleteProject(index) {
+    const project = content.projects[index];
+    if (!project || !window.confirm(`Delete "${project.title}"? Save changes to publish the deletion.`)) return;
+    content.projects.splice(index, 1);
+    updateCounters();
+    closeProjectDrawer();
+    $('#project-form').hidden = true;
+    $('#project-index').value = '-1';
+    renderProjectList();
+    setMessage($('#workspace-message'), 'Project removed. Select Save changes to publish it.');
+  }
 
   const renderProjectList = () => {
     const table = $('#project-list');
@@ -127,7 +141,16 @@
       edit.className = 'table-action';
       edit.textContent = 'Edit';
       edit.addEventListener('click', () => editProject(index));
-      actionCell.append(edit);
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'table-action table-action--danger';
+      remove.textContent = 'Delete';
+      remove.setAttribute('aria-label', `Delete ${project.title}`);
+      remove.addEventListener('click', () => deleteProject(index));
+      const actions = document.createElement('div');
+      actions.className = 'table-actions';
+      actions.append(edit, remove);
+      actionCell.append(actions);
     });
   };
 
@@ -152,6 +175,81 @@
     preview.hidden = false;
   };
 
+  const updateUploadStatus = (file = null, error = '') => {
+    const dropzone = $('#project-dropzone');
+    dropzone.classList.toggle('is-invalid', Boolean(error));
+    $('#project-image-name').textContent = error || file?.name || 'No new file selected';
+  };
+
+  const acceptImage = file => {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    let error = '';
+    if (!allowedTypes.includes(file.type)) error = 'Choose a JPG, PNG, or WebP image.';
+    else if (file.size > 5 * 1024 * 1024) error = 'Images must be 5 MB or smaller.';
+
+    if (error) {
+      $('#project-image').value = '';
+      updateUploadStatus(null, error);
+      setMessage($('#project-message'), error);
+      return false;
+    }
+
+    updateUploadStatus(file);
+    setMessage($('#project-message'), '');
+    updateImagePreview(URL.createObjectURL(file));
+    return true;
+  };
+
+  const setProjectAction = stage => {
+    const button = $('#project-submit');
+    button.dataset.stage = stage;
+    button.textContent = stage === 'publish' ? 'Publish project' : 'Apply project';
+  };
+
+  const openProjectDrawer = () => {
+    if (!projectDrawer.open) projectDrawer.showModal();
+    requestAnimationFrame(() => projectDrawer.classList.add('is-open'));
+    $('#project-title').focus({ preventScroll: true });
+  };
+
+  const closeProjectDrawer = () => {
+    projectDrawer.classList.remove('is-open');
+    if (projectDrawer.open) projectDrawer.close();
+  };
+
+  const openReviewDrawer = () => {
+    if (!reviewDrawer.open) reviewDrawer.showModal();
+    requestAnimationFrame(() => reviewDrawer.classList.add('is-open'));
+    $('#review-author').focus({ preventScroll: true });
+  };
+
+  const closeReviewDrawer = () => {
+    reviewDrawer.classList.remove('is-open');
+    if (reviewDrawer.open) reviewDrawer.close();
+  };
+
+  projectDrawer.addEventListener('close', () => projectDrawer.classList.remove('is-open'));
+  projectDrawer.addEventListener('click', event => {
+    if (event.target !== projectDrawer) return;
+    const bounds = projectDrawer.getBoundingClientRect();
+    if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) {
+      closeProjectDrawer();
+    }
+  });
+  reviewDrawer.addEventListener('close', () => reviewDrawer.classList.remove('is-open'));
+  reviewDrawer.addEventListener('click', event => {
+    if (event.target !== reviewDrawer) return;
+    const bounds = reviewDrawer.getBoundingClientRect();
+    if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) {
+      closeReviewDrawer();
+    }
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key !== 'Escape') return;
+    if (projectDrawer.open) closeProjectDrawer();
+    if (reviewDrawer.open) closeReviewDrawer();
+  });
+
   const newProject = () => {
     $('#project-form').reset();
     $('#project-form').hidden = false;
@@ -162,12 +260,14 @@
     $('#project-date').value = '';
     $('#project-url').value = '';
     $('#project-image').value = '';
+    updateUploadStatus();
     $('#project-form-title').textContent = 'New project';
+    setProjectAction('apply');
     $('#delete-project-button').hidden = true;
     setMessage($('#project-message'), '');
     updateImagePreview('');
     renderProjectList();
-    $('#project-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    openProjectDrawer();
   };
 
   function editProject(index) {
@@ -181,12 +281,14 @@
     $('#project-url').value = project.url || '';
     $('#project-cover').value = project.cover || '';
     $('#project-image').value = '';
+    updateUploadStatus();
     $('#project-form-title').textContent = 'Edit project';
+    setProjectAction('apply');
     $('#delete-project-button').hidden = false;
     setMessage($('#project-message'), '');
     updateImagePreview(project.cover || '');
     renderProjectList();
-    $('#project-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    openProjectDrawer();
   }
 
   const renderReviewList = () => {
@@ -260,7 +362,7 @@
     $('#delete-review-button').hidden = true;
     setMessage($('#review-message'), '');
     renderReviewList();
-    $('#review-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    openReviewDrawer();
   };
 
   function editReview(index) {
@@ -278,7 +380,7 @@
     $('#delete-review-button').hidden = false;
     setMessage($('#review-message'), '');
     renderReviewList();
-    $('#review-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    openReviewDrawer();
   }
 
   const initializeWorkspace = async () => {
@@ -296,9 +398,7 @@
     };
     $('#review-rating').value = content.googleReviews.rating;
     $('#review-count').value = content.googleReviews.totalReviews;
-    $('#review-place-id').value = content.googleReviews.placeId || '';
     $('#review-write-url').value = content.googleReviews.writeReviewUrl || '';
-    $('#review-api-url').value = content.googleReviews.apiEndpoint || '';
     authPanel.hidden = true;
     workspace.hidden = false;
     $('#logout-button').hidden = false;
@@ -351,18 +451,53 @@
   $('#new-project-button').addEventListener('click', newProject);
   $('#new-review-button').addEventListener('click', newReview);
   $('#cancel-project-button').addEventListener('click', () => {
+    closeProjectDrawer();
     $('#project-form').hidden = true;
     $('#project-index').value = '-1';
     renderProjectList();
   });
   $('#cancel-review-button').addEventListener('click', () => {
+    closeReviewDrawer();
     $('#review-form').hidden = true;
     $('#review-index').value = '-1';
     renderReviewList();
   });
 
+  const publishContent = async triggerButton => {
+    content.googleReviews.rating = Number($('#review-rating').value);
+    content.googleReviews.totalReviews = Number($('#review-count').value);
+    content.googleReviews.writeReviewUrl = $('#review-write-url').value.trim();
+    [saveButton, triggerButton].forEach(button => { button.disabled = true; });
+    status.textContent = 'Publishing…';
+    try {
+      await adminRequest('api/content.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(content),
+      });
+      status.textContent = 'All changes saved';
+      setMessage($('#workspace-message'), 'Your changes are live on the website.');
+      if (triggerButton.id === 'project-submit') {
+        closeProjectDrawer();
+        $('#project-form').hidden = true;
+        $('#project-index').value = '-1';
+        setProjectAction('apply');
+        renderProjectList();
+      }
+    } catch (error) {
+      status.textContent = 'Not saved';
+      setMessage(triggerButton.id === 'project-submit' ? $('#project-message') : $('#workspace-message'), error.message);
+    } finally {
+      [saveButton, triggerButton].forEach(button => { button.disabled = false; });
+    }
+  };
+
   $('#project-form').addEventListener('submit', async event => {
     event.preventDefault();
+    if ($('#project-submit').dataset.stage === 'publish') {
+      await publishContent($('#project-submit'));
+      return;
+    }
     const saveProject = {
       title: $('#project-title').value.trim(),
       tag: $('#project-category').value,
@@ -387,21 +522,15 @@
       updateCounters();
       renderProjectList();
       editProject(0);
-      setMessage($('#project-message'), 'Project applied. Select Save changes to publish it.');
+      setProjectAction('publish');
+      setMessage($('#project-message'), 'Project applied. Select Publish project to make it live.');
     } catch (error) {
       setMessage($('#project-message'), error.message);
     }
   });
 
   $('#delete-project-button').addEventListener('click', () => {
-    const index = Number($('#project-index').value);
-    if (index < 0 || !window.confirm('Delete this project? Save changes to publish the deletion.')) return;
-    content.projects.splice(index, 1);
-    updateCounters();
-    $('#project-form').hidden = true;
-    $('#project-index').value = '-1';
-    renderProjectList();
-    setMessage($('#workspace-message'), 'Project removed. Select Save changes to publish it.');
+    deleteProject(Number($('#project-index').value));
   });
 
   $('#review-form').addEventListener('submit', event => {
@@ -428,35 +557,14 @@
     if (index < 0 || !window.confirm('Delete this review? Save changes to publish the deletion.')) return;
     content.googleReviews.items.splice(index, 1);
     updateCounters();
+    closeReviewDrawer();
     $('#review-form').hidden = true;
     $('#review-index').value = '-1';
     renderReviewList();
     setMessage($('#workspace-message'), 'Review removed. Select Save changes to publish it.');
   });
 
-  saveButton.addEventListener('click', async () => {
-    content.googleReviews.rating = Number($('#review-rating').value);
-    content.googleReviews.totalReviews = Number($('#review-count').value);
-    content.googleReviews.placeId = $('#review-place-id').value.trim();
-    content.googleReviews.writeReviewUrl = $('#review-write-url').value.trim();
-    content.googleReviews.apiEndpoint = $('#review-api-url').value.trim();
-    saveButton.disabled = true;
-    status.textContent = 'Saving…';
-    try {
-      await adminRequest('api/content.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(content),
-      });
-      status.textContent = 'All changes saved';
-      setMessage($('#workspace-message'), 'Your changes are live on the website.');
-    } catch (error) {
-      status.textContent = 'Not saved';
-      setMessage($('#workspace-message'), error.message);
-    } finally {
-      saveButton.disabled = false;
-    }
-  });
+  saveButton.addEventListener('click', () => publishContent(saveButton));
 
   $('#logout-button').addEventListener('click', async () => {
     try {
@@ -471,9 +579,28 @@
     }
   });
 
-  $('#project-image').addEventListener('change', event => {
+  const dropzone = $('#project-dropzone');
+  const imageInput = $('#project-image');
+  imageInput.addEventListener('change', event => {
     const file = event.target.files[0];
-    if (file) updateImagePreview(URL.createObjectURL(file));
+    if (file) acceptImage(file);
+    else updateUploadStatus();
+  });
+  ['dragenter', 'dragover'].forEach(type => dropzone.addEventListener(type, event => {
+    event.preventDefault();
+    dropzone.classList.add('is-dragging');
+  }));
+  ['dragleave', 'drop'].forEach(type => dropzone.addEventListener(type, event => {
+    event.preventDefault();
+    dropzone.classList.remove('is-dragging');
+  }));
+  dropzone.addEventListener('drop', event => {
+    const file = event.dataTransfer.files[0];
+    if (!file) return;
+    if (!acceptImage(file)) return;
+    const transfer = new DataTransfer();
+    transfer.items.add(file);
+    imageInput.files = transfer.files;
   });
   $('#project-cover').addEventListener('input', event => updateImagePreview(event.target.value.trim()));
 

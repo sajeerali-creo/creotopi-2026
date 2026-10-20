@@ -62,7 +62,7 @@ if (count($reviews['items']) > 200) {
     creotopi_json(['error' => 'There are too many review entries.'], 422);
 }
 
-foreach (['writeReviewUrl', 'apiEndpoint'] as $urlField) {
+foreach (['writeReviewUrl'] as $urlField) {
     $url = trim((string) ($reviews[$urlField] ?? ''));
     if ($url !== '' && !creotopi_valid_web_url($url)) {
         creotopi_json(['error' => 'Google review links must use a valid HTTP or HTTPS URL.'], 422);
@@ -84,8 +84,6 @@ foreach ($reviews['items'] as $review) {
 $next = [
     'projects' => array_values($projects),
     'googleReviews' => [
-        'placeId' => trim((string) ($reviews['placeId'] ?? '')),
-        'apiEndpoint' => trim((string) ($reviews['apiEndpoint'] ?? '')),
         'writeReviewUrl' => trim((string) ($reviews['writeReviewUrl'] ?? '')),
         'rating' => $rating,
         'totalReviews' => $totalReviews,
