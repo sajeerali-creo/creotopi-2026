@@ -1,0 +1,64 @@
+# Creotopi — robots.txt
+# Search engines and AI assistants (ChatGPT, Perplexity, Claude, Gemini) are welcome.
+
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /api/
+
+# OpenAI — ChatGPT search, browsing and training
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /admin.html
+Disallow: /api/
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /admin.html
+Disallow: /api/
+
+User-agent: GPTBot
+Allow: /
+Disallow: /admin.html
+Disallow: /api/
+
+# Anthropic — Claude
+User-agent: ClaudeBot
+Allow: /
+Disallow: /admin.html
+Disallow: /api/
+
+User-agent: Claude-User
+Allow: /
+Disallow: /admin.html
+Disallow: /api/
+
+User-agent: Claude-SearchBot
+Allow: /
+Disallow: /admin.html
+Disallow: /api/
+
+# Perplexity
+User-agent: PerplexityBot
+Allow: /
+Disallow: /admin.html
+Disallow: /api/
+
+User-agent: Perplexity-User
+Allow: /
+Disallow: /admin.html
+Disallow: /api/
+
+# Google Gemini / AI Overviews
+User-agent: Google-Extended
+Allow: /
+Disallow: /admin.html
+Disallow: /api/
+
+# Apple Intelligence / Siri
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /admin.html
+Disallow: /api/
+
+Sitemap: https://creotopi.com/sitemap.xml
