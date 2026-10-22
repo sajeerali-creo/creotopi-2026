@@ -32,7 +32,7 @@
 
   // 10 hero banner tiles matching reference
   const heroTiles = [
-    { type: 'video', src: 'assets/hero/tile-1.mp4', r: '90px 90px 90px 90px' },
+    { type: 'image', src: 'assets/hero/tile-9.png', r: '90px 90px 90px 90px' },
     { type: 'image', src: 'assets/hero/tile-2.png', r: '90px 90px 90px 90px' },
     { type: 'video', src: 'assets/hero/tile-3.mp4', r: '90px 90px 90px 90px' },
     { type: 'image', src: 'assets/hero/tile-4.png', r: '90px 90px 90px 90px' },
@@ -41,7 +41,7 @@
     { type: 'image', src: 'assets/hero/tile-7.png', r: '90px 90px 90px 90px' },
     { type: 'image', src: 'assets/hero/tile-8.png', r: '90px 90px 90px 90px' },
     { type: 'video', src: 'assets/hero/tile-1.mp4', r: '90px 90px 90px 90px' },
-    { type: 'image', src: 'assets/hero/tile-2.png', r: '90px 90px 90px 90px' }
+    { type: 'image', src: 'assets/hero/tile-10.png', r: '90px 90px 90px 90px' }
   ];
 
   const renderTile = t => t.type === 'video'
